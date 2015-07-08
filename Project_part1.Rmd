@@ -1,0 +1,36 @@
+---
+title: "A Simulation for Exponential Distribution"
+author: "Zhengshi Zhao"
+date: "July 7, 2015"
+output: pdf_document
+---
+In this project you will investigate the exponential distribution in R and compare it with the Central Limit Theorem. We investigate the distribution of averages of 40 exponentials of a thousand simulations.
+
+
+```{r}
+set.seed(10302)
+sim_exp_means = NULL
+for (i in 1 : 1000) sim_exp_means = c(sim_exp_means, mean(rexp(40, 0.2)))
+```
+
+
+```{r}
+hist(sim_exp_means)
+abline(v=mean(sim_exp_means),col="red")
+abline(v=5.0,col="green")
+```
+
+```{r}
+sim_exp_mean <- mean(sim_exp_means)
+sim_exp_mean
+```
+The average of mean value from my simulation is 4.990325. The theoretical mean value is 1/gamma, i.e. 5 here. 
+
+```{r}
+set.seed(10302)
+sim_exp_vars = NULL
+for (i in 1 : 1000) sim_exp_vars = c(sim_exp_vars, var(rexp(40, 0.2)))
+hist(sim_exp_vars)
+mean(sim_exp_vars)
+```
+The average of variations is 24.96423, the theoretical varience is 1/gamma^2, 25. 
