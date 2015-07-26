@@ -15,9 +15,12 @@ for (i in 1 : 1000) sim_exp_means = c(sim_exp_means, mean(rexp(40, 0.2)))
 
 
 ```{r}
-hist(sim_exp_means)
-abline(v=mean(sim_exp_means),col="red")
-abline(v=5.0,col="green")
+x1<-sort(sim_exp_means)
+y1<- dnorm(x1, mean=mean(sim_exp_means), sd=sd(sim_exp_means))
+
+hist(sim_exp_means,freq=FALSE,col="lightblue",breaks=40, xlab="Sample means")
+abline(v=5.0,col="red",lwd=4)
+lines(x1,y1,type="l",lwd=2)
 ```
 
 ```{r}
@@ -30,7 +33,23 @@ The average of mean value from my simulation is 4.990325. The theoretical mean v
 set.seed(10302)
 sim_exp_vars = NULL
 for (i in 1 : 1000) sim_exp_vars = c(sim_exp_vars, var(rexp(40, 0.2)))
-hist(sim_exp_vars)
+x2<-sort(sim_exp_vars)
+y2<- dnorm(x2, mean=mean(sim_exp_vars), sd=sd(sim_exp_vars))
+data_var_norm <- cbind(x2,y2)
+
+hist(sim_exp_vars,freq=FALSE,breaks=40,col="lightblue",xlab="Sample variances")
+lines(x2,y2)
+lines(density(sim_exp_vars))
+abline(v=25.0,col="red", lwd=4 )
 mean(sim_exp_vars)
 ```
 The average of variations is 24.96423, the theoretical varience is 1/gamma^2, 25. 
+```{r}
+for (i in 1 : 10000) sim_exp_means = c(sim_exp_means, mean(rexp(40, 0.2)))
+fit<-density(sim_exp_means)
+yy <- rnorm(1000, sample(sim_exp_means, size = 1000, replace = TRUE), fit$bw)
+hist(sim_exp_means,freq=FALSE,col="lightblue",breaks=40, xlab="Sample means")
+lines(fit)
+lines(density(yy), col = "blue")
+lines(x1,y1,type="l",lwd=2)
+```
