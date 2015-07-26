@@ -1,0 +1,66 @@
+---
+title: "The Effect of Vitamin C on Tooth Growth in Guinea Pigs"
+author: "Zhengshi Zhao"
+date: "July 26, 2015"
+output: pdf_document
+---
+
+In this report, I will discuss the effect of Vitamin C on tooth growth in guinea pigs based results of analysis on one of R datasets, ToothGrowth. 
+### load ToothGrowth data from R datasets package. 
+```{r}
+library(datasets)
+data(ToothGrowth)
+```
+## explonary analysis and summary of the data
+
+```{r}
+library(ggplot2)
+ToothGrowth$dose <- factor(ToothGrowth$dose, levels=c(0.5,1,2), 
+                           labels=c("dose_0.5mg","dose_1mg","dose_2mg"))
+ToothGrowth$supp <- factor(ToothGrowth$supp, levels=c('VC','OJ'),
+                           labels=c("Ascorbic acid","Orange juice"))
+qplot(supp, len, data = ToothGrowth, geom=c("boxplot"), fill=dose,
+                        xlab = "Supplement type", ylab="Tooth length")
+```
+###The plot above shows lengh of Tooth growth with different Vitamin C supplement types, Ascorbic Acid and Orange juice. The lenths are also diveved by different dose levels of Vitamin C, 0,5mg, 1mg, 2mg respectively. The plot shows that in both types of supplement, the tooth growth are increaced with increacing of doses of Vitamin C. While with Ascorbic Acid supplement, the increacement of tooth lenth seems to be linear to increacement of dose of Vitamin C, with Orange juice supplement,the increacement of tooth lenth seems to be exponential of increacement of dose of Vitamin C. With the same doses of Vitamin C, the means of tooth lenths with Orange juice supplement method are larger than those with Ascorbic acid. 
+
+## Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+```{r message=FALSE}
+library(dplyr)
+data(ToothGrowth)
+dtVC1 <- filter(ToothGrowth, dose==0.5, supp =="VC")
+dtVC2 <- filter(ToothGrowth, dose==1, supp =="VC")
+dtVC3 <- filter(ToothGrowth, dose==2, supp =="VC")
+dtOJ1 <- filter(ToothGrowth, dose==0.5, supp =="OJ")
+dtOJ2 <- filter(ToothGrowth, dose==1, supp =="OJ")
+dtOJ3 <- filter(ToothGrowth, dose==2, supp =="OJ")   
+ttest <- rbind(c("VC0.5mg-OJ0.5mg",
+                 t.test(dtVC1$len-dtOJ1$len, paired = FALSE)$statistic, 
+                 t.test(dtVC1$len-dtOJ1$len, paired = FALSE)$conf, 
+                 t.test(dtVC1$len-dtOJ1$len, paired = FALSE)$p.value),
+c("VC1mg-OJ1mg",t.test(dtVC2$len-dtOJ2$len,paired = FALSE)$statistic,
+  t.test(dtVC2$len-dtOJ2$len,paired = FALSE)$conf,
+  t.test(dtVC2$len-dtOJ2$len,paired = FALSE)$p.value), 
+c("VC2mg-OJ2mg",t.test(dtVC3$len-dtOJ3$len,paired = FALSE)$statistic,
+  t.test(dtVC3$len-dtOJ3$len,paired = FALSE)$conf, 
+  t.test(dtVC3$len-dtOJ3$len,paired = FALSE)$p.value),
+c("VC0.5mg-VC1mg",t.test(dtVC1$len-dtVC2$len,paired = FALSE)$statistic,
+  t.test(dtVC1$len-dtVC2$len,paired = FALSE)$conf,
+  t.test(dtVC1$len-dtVC2$len,paired = FALSE)$p.value),
+c("VC1mg-VC2mg",t.test(dtVC2$len-dtVC3$len,paired = FALSE)$statistic,
+  t.test(dtVC2$len-dtVC3$len,paired = FALSE)$conf,
+  t.test(dtVC2$len-dtVC3$len,paired = FALSE)$p.value),
+c("OJ0.5mg-OJ1mg", t.test(dtOJ1$len-dtOJ2$len,paired = FALSE)$statistic,
+  t.test(dtOJ1$len-dtOJ2$len,paired = FALSE)$conf, 
+  t.test(dtOJ1$len-dtOJ2$len,paired = FALSE)$p.value),
+c("OJ1mg-OJ2mg", t.test(dtOJ2$len-dtOJ3$len,paired = FALSE)$statistic,
+  t.test(dtOJ2$len-dtOJ3$len,paired = FALSE)$conf,
+  t.test(dtOJ2$len-dtOJ3$len,paired = FALSE)$p.value))
+colnames(ttest)<- c("Y-X","t-test", "Lower Confidence Interval", 
+                    "Upper Confidence Interval", "P-Value")
+write.csv(ttest,file="Ttest.csv",row.names = FALSE)
+ttest
+```
+In the table, I gave the t-test, 95% confidance t intervals and P values as the results of caomparing tooth growth by supp and dose. I performed 7 T tests to compare the difference of mean tooth growth with supplements and doses, with the assumtion of equal variances for all the datasets. 
+##Conclution: 
+The T test reslut shows that, in both supplement methods, the Vitamin C is effective to enhance the growth og tooth. Moreover, when the small dose of Vitamin C is the same, (i.e, 0.5mg to 1mg) Supply Vitamin C with Orange Juice is more effective than Ascorbic Acid. But when the dose of Vitamin C reaches 2mg, the growth of tooth does not change with different supplement methods. 
